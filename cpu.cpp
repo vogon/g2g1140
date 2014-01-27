@@ -75,6 +75,7 @@ void Cpu::writeBack(const Control *control)
 
 	case OpLoc_Mem:
 		m_mmu->write(control->m_Zaddr, control->m_result, &abort);
+		CHECK_ABORT(&abort);
 		break;
 
 	default:
@@ -86,6 +87,10 @@ void Cpu::writeBack(const Control *control)
 	}
 
 	m_psw = control->m_psw;
+
+mmu_abort:
+	// TODO: write mmu abort logic
+	return;
 }
 
 uint16_t Cpu::getReg(uint8_t reg)

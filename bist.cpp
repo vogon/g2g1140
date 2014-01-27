@@ -39,7 +39,7 @@ void assert_mem_wd_eq(size_t offset, uint16_t expected, String id)
 	{
 		Serial.print(id);
 		Serial.print(": assertion failed on @");
-		Serial.print(offset);
+		Serial.print(offset, OCT);
 		Serial.print(" (");
 		Serial.print(actual, OCT);
 		Serial.print(" != ");
@@ -69,6 +69,7 @@ void bist_3_3_2()
 
 	// CLR (R5)+
 	bist_mmu->write(030000, 0111116, &abort);
+
 	bist_cpu->loadReg(5, 030000);
 	run_1_insn(005025);
 	assert_mem_wd_eq(030000, 000000, "3.3.2.1");
