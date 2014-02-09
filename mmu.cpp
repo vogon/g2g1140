@@ -26,6 +26,11 @@ Mmu::~Mmu()
 	delete[] m_ram;
 }
 
+Mmu::Abort::Abort()
+{
+	aborted = false;
+}
+
 void Mmu::setEnabled(bool enabled)
 {
 	m_mmuEnable = enabled;
@@ -54,8 +59,19 @@ void Mmu::addOverlay(uint32_t basePhys, uint32_t size, overlay_read_t read,
 
 uint16_t Mmu::read(uint16_t virt, Abort *abort) const
 {
+	Serial.print("read: virt ");
+	Serial.println(virt);
+
 	uint32_t phys = virt2phys(virt, abort);
+
+	Serial.print("read: phys ");
+	Serial.println(phys);
+
 	CHECK_ABORT(abort);
+
+	Serial.print("read: ");
+	Serial.print(m_nextOverlay);
+	Serial.println(" overlays");
 
 	for (int i = 0; i < m_nextOverlay; i++)
 	{

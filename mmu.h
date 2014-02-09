@@ -15,6 +15,8 @@ public:
 
 	struct Abort
 	{
+		Abort();
+
 		bool aborted;
 	};
 
