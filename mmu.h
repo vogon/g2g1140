@@ -5,67 +5,40 @@
 
 #define CHECK_ABORT(a) if ((a)->aborted) goto mmu_abort;
 
-class Mmu
+struct _mmu;
+typedef struct _mmu mmu_t;
+
+typedef struct _mmu_abort 
 {
-public:
-	Mmu(size_t ramSize);
-	~Mmu();
+	bool aborted;
+	bool unalignedRead;
+	bool addressNotPresent;
+} 
+mmu_abort_t;
 
-	void setEnabled(bool enabled);
+typedef uint8_t (*overlay_read_byte_t)(mmu_t *,
+	uint32_t /*offset*/, mmu_abort_t *);
+typedef uint16_t (*overlay_read_word_t)(mmu_t *,
+	uint32_t /*offset*/, mmu_abort_t *);
 
-	struct Abort
-	{
-		Abort();
+typedef void (*overlay_write_byte_t)(mmu_t *,
+	uint32_t /*offset*/, uint8_t /*value*/, mmu_abort_t *);
+typedef void (*overlay_write_word_t)(mmu_t *,
+	uint32_t /*offset*/, uint16_t /*value*/, mmu_abort_t *);
 
-		bool aborted;
-	};
+mmu_t *mmu_create(size_t ramSize);
+void mmu_destroy(mmu_t *mmu);
 
-	typedef uint16_t (*overlay_read_t)(void * /*userData*/, 
-		uint32_t /*offset*/, Abort *);
-	typedef void (*overlay_write_t)(void * /*userData*/, 
-		uint32_t /*offset*/, uint16_t /*value*/, Abort *);
+void mmu_set_enabled(mmu_t *mmu, bool enabled);
+void mmu_add_overlay(mmu_t *mmu, uint32_t basePhys, uint32_t size, 
+	overlay_read_byte_t readByte, overlay_read_word_t readWord,
+	overlay_write_byte_t writeByte, overlay_write_word_t writeWord);
 
-	void addOverlay(uint32_t basePhys, uint32_t size, overlay_read_t read, 
-		overlay_write_t write, void *userData);
-
-	uint16_t read(uint16_t virt, Abort *abort) const;
-	void write(uint16_t virt, uint16_t value, Abort *abort);
-
-private:
-	struct Overlay
-	{
-		uint32_t base;
-		uint32_t size;
-		overlay_read_t read;
-		overlay_write_t write;
-		void *userData;
-	};
-
-	uint32_t virt2phys(uint16_t virt, Abort *abort) const;
-
-	static uint16_t _readRam(void *userData, uint32_t offset, Abort *abort)
-	{
-		Mmu *mmu = (Mmu *)userData;
-		return mmu->readRam(offset, abort);
-	}
-
-	static void _writeRam(void *userData, uint32_t offset, uint16_t value,
-		Abort *abort)
-	{
-		Mmu *mmu = (Mmu *)userData;
-		mmu->writeRam(offset, value, abort);
-	}
-
-	uint16_t readRam(uint32_t offset, Abort *abort);
-	void writeRam(uint32_t offset, uint16_t value, Abort *abort);
-
-	bool m_mmuEnable;
-	uint8_t *m_ram;
-	size_t m_ramSize;
-
-	static const uint32_t N_OVERLAYS = 64;
-	Overlay *m_overlays[N_OVERLAYS];
-	uint32_t m_nextOverlay;
-};
+uint8_t mmu_read_byte(mmu_t *mmu, uint16_t virt, mmu_abort_t *abort);
+uint16_t mmu_read_word(mmu_t *mmu, uint16_t virt, mmu_abort_t *abort);
+void mmu_write_byte(mmu_t *mmu, uint16_t virt, uint8_t value,
+	mmu_abort_t *abort);
+void mmu_write_word(mmu_t *mmu, uint16_t virt, uint16_t value,
+	mmu_abort_t *abort);
 
 #endif /* _MMU_H */

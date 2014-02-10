@@ -6,6 +6,6 @@
 #ifndef _BIST_H
 #define _BIST_H
 
-void bist(Cpu *cpu, Mmu *mmu);
+void bist(cpu_t *cpu, mmu_t *mmu);
 
 #endif /* _BIST_H */

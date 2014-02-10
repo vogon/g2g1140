@@ -5,65 +5,19 @@
 #ifndef _CPU_H
 #define _CPU_H
 
-class Cpu 
-{
-public:
-	Cpu(Mmu *mmu);
-	~Cpu();
+struct cpu;
+typedef struct cpu cpu_t;
 
- 	uint16_t getReg(uint8_t reg);
- 	void loadReg(uint8_t reg, uint16_t value);
+cpu_t *cpu_create(mmu_t *mmu);
+void cpu_destroy(cpu_t *cpu);
 
- 	void step();
+void cpu_reset(cpu_t *cpu);
 
- 	String dump() const;
+uint16_t cpu_peek_reg(cpu_t *cpu, uint8_t reg);
+void cpu_poke_reg(cpu_t *cpu, uint8_t reg, uint16_t value);
 
-private:
-	// implementation-independent processor state
-	uint16_t m_r[8];
-	uint16_t& m_sp = m_r[6];
-	uint16_t& m_pc = m_r[7];
+void cpu_step(cpu_t *cpu);
 
-	uint16_t m_psw;
-
-	Mmu *m_mmu;
-
-	// implementation-specific processor state
-	enum MicroOp 
-	{
-	};
-
-	enum OperandLocation 
-	{
-		OpLoc_None,
-		OpLoc_Reg,
-		OpLoc_Mem,
-		OpLoc_Imm
-	};
-
-	struct Control 
-	{
-		Control();
-
-		MicroOp m_uop;
-
-		OperandLocation m_Aloc;
-		size_t m_Aaddr;
-
-		OperandLocation m_Bloc;
-		size_t m_Baddr;
-
-		OperandLocation m_Zloc;
-		size_t m_Zaddr;
-
-		uint16_t m_result;
-		uint16_t m_psw;
-	};
-
-	// internal helper methods
-	void decode(Control *control);
-	void execute(const Control *control);
-	void writeBack(const Control *control);
-};
+String cpu_dump(cpu_t *cpu);
 
 #endif /* _CPU_H */

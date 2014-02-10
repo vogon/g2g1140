@@ -7,14 +7,14 @@ enum State
 	RUNNING
 };
 
-Mmu *mmu;
-Cpu *cpu;
+mmu_t *mmu;
+cpu_t *cpu;
 State state;
 
 void setup()
 {
-	mmu = new Mmu(131072);
-	cpu = new Cpu(mmu);
+	mmu = mmu_create(131072);
+	cpu = cpu_create(mmu);
 	Serial.begin(9600);
 	Serial.setTimeout(-1);
 
@@ -44,7 +44,7 @@ void loop()
 
 	case RUNNING:
 		// STUB: actually run things
-		Serial.print(cpu->dump());
+		Serial.print(cpu_dump(cpu));
 		delay(1000);
 
 		int ch;
