@@ -79,7 +79,24 @@ void mmu_add_overlay(mmu_t *mmu, uint32_t basePhys, uint32_t size,
 	}
 }
 
-void mmu_read_byte(mmu_t *mmu, uint16_t virt, mmu_abort_t *abort)
+uint8_t mmu_read_byte(mmu_t *mmu, uint16_t virt, mmu_abort_t *abort)
+{
+	return 0;
+}
+
+uint16_t mmu_read_word(mmu_t *mmu, uint16_t virt, mmu_abort_t *abort)
+{
+	return 0;
+}
+
+void mmu_write_byte(mmu_t *mmu, uint16_t virt, uint8_t value,
+	mmu_abort_t *abort)
+{
+
+}
+
+void mmu_write_word(mmu_t *mmu, uint16_t virt, uint16_t value,
+	mmu_abort_t *abort)
 {
 	
 }
