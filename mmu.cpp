@@ -25,6 +25,7 @@ struct _mmu
 	uint32_t nextOverlayIndex;
 };
 
+mmu_overlay_t *_mmu_find_overlay(mmu_t *mmu, uint32_t phys);
 
 mmu_t *mmu_create(size_t ramSize)
 {
@@ -79,6 +80,23 @@ void mmu_add_overlay(mmu_t *mmu, uint32_t basePhys, uint32_t size,
 	}
 }
 
+mmu_overlay_t *_mmu_find_overlay(mmu_t *mmu, uint32_t phys)
+{
+	for (int i = 0; i < N_OVERLAYS; i++)
+	{
+		// assume all null overlays are at the end
+		if (mmu->overlays[i] == NULL) return NULL;
+
+		mmu_overlay_t *ovl = mmu->overlays[i];
+
+		if ((ovl->base) <= phys && (ovl->base + ovl->size) > phys)
+		{
+			// phys is contained in this overlay
+			return ovl;
+		}
+	}
+}
+
 uint8_t mmu_read_byte(mmu_t *mmu, uint16_t virt, mmu_abort_t *abort)
 {
 	return 0;
@@ -98,5 +116,5 @@ void mmu_write_byte(mmu_t *mmu, uint16_t virt, uint8_t value,
 void mmu_write_word(mmu_t *mmu, uint16_t virt, uint16_t value,
 	mmu_abort_t *abort)
 {
-	
+
 }
