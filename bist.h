@@ -1,4 +1,6 @@
+#ifdef ARDUINO
 #include <Arduino.h>
+#endif
 
 #include "cpu.h"
 #include "mmu.h"

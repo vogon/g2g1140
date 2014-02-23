@@ -1,4 +1,9 @@
+#ifdef ARDUINO
 #include <Arduino.h>
+#else
+#include <stdlib.h>
+#include <stdint.h>
+#endif
 
 #ifndef _MMU_H
 #define _MMU_H
@@ -10,9 +15,12 @@ typedef struct _mmu mmu_t;
 
 typedef struct _mmu_abort 
 {
+	_mmu_abort() : aborted(false), 
+		boundaryError(false), timeOutError(false) {}
+
 	bool aborted;
-	bool unalignedRead;
-	bool addressNotPresent;
+	bool boundaryError;
+	bool timeOutError;
 } 
 mmu_abort_t;
 

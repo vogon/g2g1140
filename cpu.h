@@ -1,4 +1,6 @@
+#ifdef ARDUINO
 #include <Arduino.h>
+#endif
 
 #include "mmu.h"
 
@@ -18,6 +20,8 @@ void cpu_poke_reg(cpu_t *cpu, uint8_t reg, uint16_t value);
 
 void cpu_step(cpu_t *cpu);
 
+#ifdef ARDUINO
 String cpu_dump(cpu_t *cpu);
+#endif
 
 #endif /* _CPU_H */

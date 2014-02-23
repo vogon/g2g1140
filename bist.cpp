@@ -1,3 +1,6 @@
+#include <stdlib.h>
+#include <stdio.h>
+
 #include "bist.h"
 
 cpu_t *bist_cpu;
@@ -13,38 +16,26 @@ void run_1_insn(uint16_t insn)
 	cpu_step(bist_cpu);							  // run
 }
 
-void assert_reg_eq(uint8_t reg, uint16_t expected, String id)
+void assert_reg_eq(uint8_t reg, uint16_t expected, const char *id)
 {
 	uint16_t actual = cpu_peek_reg(bist_cpu, reg);
 
 	if (actual != expected)
 	{
-		Serial.print(id);
-		Serial.print(": assertion failed on r");
-		Serial.print(reg);
-		Serial.print(" (");
-		Serial.print(actual, OCT);
-		Serial.print(" != ");
-		Serial.print(expected, OCT);
-		Serial.println(")");
+		printf("%s: assertion failed on r%d (%06o != %06o)\n",
+			id, reg, actual, expected);
 	}
 }
 
-void assert_mem_wd_eq(size_t offset, uint16_t expected, String id)
+void assert_mem_wd_eq(size_t offset, uint16_t expected, const char *id)
 {
 	mmu_abort_t abort;
 	uint16_t actual = mmu_read_word(bist_mmu, offset, &abort);
 
 	if (actual != expected)
 	{
-		Serial.print(id);
-		Serial.print(": assertion failed on @");
-		Serial.print(offset, OCT);
-		Serial.print(" (");
-		Serial.print(actual, OCT);
-		Serial.print(" != ");
-		Serial.print(expected, OCT);
-		Serial.println(")");
+		printf("%s: assertion failed on @%o (%06o != %06o)\n",
+			id, offset, actual, expected);
 	}
 }
 
@@ -101,5 +92,5 @@ void bist(cpu_t *cpu, mmu_t *mmu)
 	bist_cpu = NULL;
 	bist_mmu = NULL;
 
-	Serial.println("BIST complete");
+	printf("BIST complete\n");
 }

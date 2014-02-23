@@ -1,0 +1,3 @@
+bist
+.vagrant/*
+*.o

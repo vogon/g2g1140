@@ -5,10 +5,18 @@ struct cpu
 	mmu_t *mmu;
 
 	uint16_t r[8];			// gp regs
-	uint16_t &sp = r[6];	// alias for sp
-	uint16_t &pc = r[7];	// alias for pc
 
 	uint16_t ps;			// processor status word
+};
+
+struct cpu_control
+{
+	// instruction fields per processor handbook pp. A-9
+	uint16_t bop;
+	uint16_t uop;
+
+	uint16_t sf, df;
+	uint8_t sm, sr, dm, dr;
 };
 
 cpu_t *cpu_create(mmu_t *mmu)
@@ -44,12 +52,40 @@ void cpu_poke_reg(cpu_t *cpu, uint8_t reg, uint16_t value)
 	cpu->r[reg] = value;
 }
 
-void cpu_step(cpu_t *cpu)
+uint16_t _cpu_fetch(cpu_t *cpu, mmu_abort_t *abort)
+{
+	return mmu_read_word(cpu->mmu, cpu->r[7], abort);
+}
+
+void _cpu_decode(cpu_t *cpu, cpu_control *control)
 {
 
 }
 
+void _cpu_execute(cpu_t *cpu, cpu_control *control)
+{
+
+}
+
+void cpu_step(cpu_t *cpu)
+{
+	mmu_abort_t abort;
+	cpu_control control;
+
+	uint16_t insnWord = _cpu_fetch(cpu, &abort); // IF
+	CHECK_ABORT(&abort);
+
+	_cpu_decode(cpu, &control);
+	_cpu_execute(cpu, &control);
+
+mmu_abort:
+	// TODO: actual abort handling code
+	return;
+}
+
+#ifdef ARDUINO
 String cpu_dump(cpu_t *cpu)
 {
 
 }
+#endif
