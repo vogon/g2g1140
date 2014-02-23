@@ -1,7 +1,10 @@
-OBJS = bist.o cpu.o main.o mmu.o
+OBJS = bist.o cpu.o linux_main.o mmu.o
 
 all: bist
-.PHONY: all
+clean:
+	rm -f bist *.o
+
+.PHONY: all clean
 
 bist: $(OBJS)
 	$(CXX) -o $@ $(OBJS)
